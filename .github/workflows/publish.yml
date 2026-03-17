@@ -30,6 +30,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - run: bun install
+      - run: bun run build
 
       - run: npm install -g npm@latest
 
