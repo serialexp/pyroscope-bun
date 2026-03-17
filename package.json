@@ -13,7 +13,10 @@
   "scripts": {
     "build": "tsup"
   },
-  "repository": "https://github.com/serialexp/pyroscope-bun",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serialexp/pyroscope-bun"
+  },
   "license": "ISC",
   "devDependencies": {
     "@types/bun": "latest",
