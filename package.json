@@ -1,13 +1,17 @@
 {
   "name": "pyroscope-bun",
   "version": "0.1.0",
+  "description": "Continuous profiling for Bun using JavaScriptCore's sampling profiler with Pyroscope backend",
   "module": "src/index.ts",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
+  "repository": "https://github.com/serialexp/pyroscope-bun",
+  "license": "ISC",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "just-release": "^0.9.1"
   },
   "peerDependencies": {
     "typescript": "^5"
