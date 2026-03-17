@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-bun",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Continuous profiling for Bun using JavaScriptCore's sampling profiler with Pyroscope backend",
   "type": "module",
   "exports": {
