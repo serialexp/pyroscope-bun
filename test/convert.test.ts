@@ -62,6 +62,112 @@ describe("jscToPprof", () => {
     expect(profile.sampleType.length).toBe(2);
   });
 
+  test("sample value count matches sampleType count", () => {
+    const data: JscProfileData = {
+      interval: 0.001,
+      traces: [
+        {
+          timestamp: 1.0,
+          frames: [
+            {
+              sourceID: 1,
+              name: "work",
+              location: "#x:Baseline:bc#1",
+              line: 1,
+              column: 1,
+              category: "Baseline",
+              flags: 0,
+            },
+          ],
+        },
+        {
+          timestamp: 1.001,
+          frames: [
+            {
+              sourceID: 1,
+              name: "work",
+              location: "#x:Baseline:bc#1",
+              line: 1,
+              column: 1,
+              category: "Baseline",
+              flags: 0,
+            },
+          ],
+        },
+      ],
+      sources: [{ sourceID: 1, url: "/app/test.ts" }],
+    };
+
+    const profile = jscToPprof(data);
+    const expectedValueCount = profile.sampleType.length;
+
+    for (const sample of profile.sample) {
+      expect(sample.value.length).toBe(expectedValueCount);
+    }
+  });
+
+  test("sample values contain correct count and wall time", () => {
+    const data: JscProfileData = {
+      interval: 0.0001, // 100μs = 100_000ns
+      traces: [
+        {
+          timestamp: 1.0,
+          frames: [
+            {
+              sourceID: 1,
+              name: "fn",
+              location: "#x:Baseline:bc#1",
+              line: 1,
+              column: 1,
+              category: "Baseline",
+              flags: 0,
+            },
+          ],
+        },
+      ],
+      sources: [{ sourceID: 1, url: "/app/test.ts" }],
+    };
+
+    const profile = jscToPprof(data);
+    const sample = profile.sample[0]!;
+
+    // First value: sample count = 1
+    expect(Number(sample.value[0])).toBe(1);
+    // Second value: wall time in nanoseconds = interval
+    expect(Number(sample.value[1])).toBe(100_000);
+  });
+
+  test("different intervals produce correct wall time values", () => {
+    for (const interval of [0.001, 0.01, 0.0001]) {
+      const data: JscProfileData = {
+        interval,
+        traces: [
+          {
+            timestamp: 1.0,
+            frames: [
+              {
+                sourceID: 1,
+                name: "fn",
+                location: "#x:Baseline:bc#1",
+                line: 1,
+                column: 1,
+                category: "Baseline",
+                flags: 0,
+              },
+            ],
+          },
+        ],
+        sources: [{ sourceID: 1, url: "/app/test.ts" }],
+      };
+
+      const profile = jscToPprof(data);
+      const expectedNs = Math.round(interval * 1e9);
+
+      expect(Number(profile.sample[0]!.value[1])).toBe(expectedNs);
+      expect(Number(profile.period)).toBe(expectedNs);
+    }
+  });
+
   test("deduplicates identical frames across traces", () => {
     const frame = {
       sourceID: 1,

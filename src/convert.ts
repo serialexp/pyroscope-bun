@@ -117,6 +117,8 @@ export function jscToPprof(data: JscProfileData): Profile {
     return id;
   }
 
+  const intervalNs = Math.round(data.interval * 1e9);
+
   // Convert traces to samples
   // JSC frames are innermost-first, pprof locationId expects leaf-first too
   const samples: Sample[] = [];
@@ -131,12 +133,11 @@ export function jscToPprof(data: JscProfileData): Profile {
     samples.push(
       Sample.create({
         locationId: locationIds,
-        value: [1], // 1 sample count per trace
+        value: [1, intervalNs], // 1 sample count, wall time = sampling interval
       }),
     );
   }
 
-  const intervalNs = Math.round(data.interval * 1e9);
 
   return new Profile({
     sampleType: [
